@@ -7,41 +7,25 @@ import com.lesson3.hwStorageFile.dao.FileDAO;
 import com.lesson3.hwStorageFile.dao.GeneralDAO;
 import com.lesson3.hwStorageFile.dao.StorageDAO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 
+@Service
 public class GeneralService<T> {
 
-    @Autowired
     private StorageDAO storageDAO;
-    @Autowired
     private FileDAO fileDAO;
     private GeneralDAO generalDAO;
 
     public GeneralService() {
     }
 
-    public File put(Storage storage, File file) throws BadRequestException {
-        checkLimitation(storage, file);
-        return fileDAO.put(storage, file);
+    @Autowired
+    public GeneralService(GeneralDAO generalDAO) {
+        this.generalDAO = generalDAO;
 
-    }
-
-    public void delete(Storage storage, File file) throws BadRequestException {
-        fileDAO.delete(storage, file);
-    }
-
-    public File transferFile(Storage storageFrom, Storage storageTo, long id) throws BadRequestException {
-        if (findById(storageFrom, id) == null)
-            throw new BadRequestException("File id " + id + "doesn't exist in Storage id " + storageFrom.getId());
-        checkLimitation(storageTo, findById(storageFrom, id));
-        return fileDAO.transferFile(storageFrom, storageTo, id);
-    }
-
-    public List<File> transferAll(Storage storageFrom, Storage storageTo) throws BadRequestException {
-        checkLimitsFiles(storageTo, storageFrom.getFiles());
-        return fileDAO.transferAll(storageFrom, storageTo);
     }
 
     public T findObjectById(long id) {

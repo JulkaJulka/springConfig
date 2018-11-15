@@ -22,10 +22,17 @@ import java.util.List;
 @Controller
 public class StorageController {
 
-    @Autowired
     private FileService fileService;
-    @Autowired
     private StorageService storageService;
+
+    public StorageController() {
+    }
+
+   @Autowired
+    public StorageController(FileService fileService, StorageService storageService) {
+        this.fileService = fileService;
+        this.storageService = storageService;
+    }
 
     @RequestMapping(method = RequestMethod.POST, value = "/putFile", produces = "text/plain")
     public @ResponseBody
@@ -37,8 +44,8 @@ public class StorageController {
         Long idStorage = Long.parseLong(sId);
 
         try {
-            Storage storage = storageService.findObjectById(idStorage);
             File file = fileService.findObjectById(idFile);
+            Storage storage = storageService.findObjectById(idStorage);
 
             return fileService.put(storage, file).toString();
 
@@ -58,7 +65,11 @@ public class StorageController {
         String fId = req.getParameter("idFile");
         Long idFile = Long.parseLong(fId);
 
+        /*String sId = req.getParameter("idStorage");
+        Long idStorage = Long.parseLong(sId);*/
+
         try {
+
 
             Storage storage = convertJSONStringToStorage(req);
             File file = fileService.findObjectById(idFile);
