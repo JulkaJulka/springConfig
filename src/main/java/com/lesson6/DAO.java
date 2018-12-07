@@ -1,4 +1,4 @@
-package com.lesson5;
+package com.lesson6;
 
 import org.springframework.stereotype.Repository;
 

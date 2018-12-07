@@ -1,10 +1,7 @@
-package com.lesson5;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
+package com.lesson6;
 
 import javax.persistence.*;
 import java.lang.reflect.Field;
-import java.util.Date;
 
 @Entity
 @Table(name = "ITEM_SPRING")

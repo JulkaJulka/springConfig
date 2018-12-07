@@ -1,4 +1,4 @@
-package com.lesson5;
+package com.lesson6;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
