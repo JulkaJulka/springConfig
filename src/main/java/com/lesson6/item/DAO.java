@@ -1,4 +1,4 @@
-package com.lesson6;
+package com.lesson6.item;
 
 import org.springframework.stereotype.Repository;
 
@@ -8,7 +8,7 @@ import javax.persistence.Query;
 import javax.transaction.Transactional;
 
 @Repository
-@Transactional
+
 public class DAO {
 
     private static String FIND_BY_ID_ITEM = "FROM Item WHERE ID =:id";
@@ -16,11 +16,13 @@ public class DAO {
     @PersistenceContext
     private EntityManager entityManager;
 
+   @Transactional
     public Item save(Item item) {
         entityManager.persist(item);
         return item;
     }
 
+    @Transactional
     public Item delete(Long id) throws BadRequestException {
 
         if (entityManager.find(Item.class, id) == null)
@@ -32,6 +34,7 @@ public class DAO {
         return deleteItem;
     }
 
+    @Transactional
     public Item update(Item item) throws BadRequestException {
         if (entityManager.find(Item.class, item.getId()) == null)
             throw new BadRequestException("Item id " + item.getId() + " doesn't exist in DB");

@@ -15,7 +15,7 @@ import javax.persistence.EntityManagerFactory;
 
 @Configuration
 @ComponentScan(value = {"com"})
-@EnableTransactionManagement
+@EnableTransactionManagement(proxyTargetClass = true)
 public class AppConfig {
 
     @Bean

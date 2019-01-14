@@ -1,4 +1,4 @@
-package com.lesson6;
+package com.lesson6.item;
 
 import javax.persistence.*;
 import java.lang.reflect.Field;

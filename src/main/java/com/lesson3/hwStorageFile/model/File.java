@@ -47,7 +47,6 @@ public class File{
 
     @ManyToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JoinColumn(name = "STORAGE_ID")
-
     public Storage getStorage() {
         return storage;
     }
