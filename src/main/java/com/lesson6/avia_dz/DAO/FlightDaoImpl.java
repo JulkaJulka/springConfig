@@ -8,13 +8,15 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.Query;
 import javax.persistence.criteria.*;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Repository
-public class FlightDaoImpl extends GenericDaoImpl<Flight> implements FlightDAO{
-    private static String FIND_TOP_FLIGHTS_BY_CITY_TO =  "SELECT * " +
+public class FlightDaoImpl extends GenericDaoImpl<Flight> implements FlightDAO {
+    private static String FIND_TOP_FLIGHTS_BY_CITY_TO = "SELECT * " +
             "FROM FLIGHT f " +
             "JOIN (" +
             "   SELECT fl.FLIGHT_ID AS fl_ID " +
@@ -24,7 +26,7 @@ public class FlightDaoImpl extends GenericDaoImpl<Flight> implements FlightDAO{
             "   GROUP BY fl.FLIGHT_ID " +
             "   ORDER BY COUNT(fl.CITY_TO) DESC) un ON f.FLIGHT_ID = un.fl_ID AND ROWNUM <= 20";
 
-    private static String FIND_TOP_FLIGHTS_BY_CITY_FROM =  "SELECT * " +
+    private static String FIND_TOP_FLIGHTS_BY_CITY_FROM = "SELECT * " +
             "FROM FLIGHT f " +
             "JOIN (" +
             "   SELECT fl.FLIGHT_ID AS fl_ID " +
@@ -37,20 +39,60 @@ public class FlightDaoImpl extends GenericDaoImpl<Flight> implements FlightDAO{
     @Override
     public List<Flight> mostPopularTo(String cityTo) {
         Query query = getEntityManager().createNativeQuery(FIND_TOP_FLIGHTS_BY_CITY_TO, Flight.class);
-        query.setParameter(1,cityTo);
+        query.setParameter(1, cityTo);
         return query.getResultList();
     }
 
     @Override
     public List<Flight> mostPopularFrom(String cityFrom) {
         Query query = getEntityManager().createNativeQuery(FIND_TOP_FLIGHTS_BY_CITY_FROM, Flight.class);
-        query.setParameter(1,cityFrom);
+        query.setParameter(1, cityFrom);
         return query.getResultList();
     }
 
     //TODO
+
+
     @Override
     public List<Flight> flightsByDate(Filter filter) {
-        return null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> filterParams = objectMapper.convertValue(filter, Map.class);
+
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Flight> flightCriteria = criteriaBuilder.createQuery(Flight.class);
+
+        Root<Flight> rootFlight = flightCriteria.from(Flight.class);
+
+        Predicate predicate = criteriaBuilder.conjunction();
+
+        for (String param : filterParams.keySet()) {
+            if (filterParams.get(param) != null) {
+
+                if (param.equals("model")) {
+                    predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(
+                            rootFlight.get("plane").get(param), filterParams.get(param)));
+
+                }
+                if (param.equals("cityFrom") || param.equals("cityTo"))
+                    predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(
+                            rootFlight.get(param), filterParams.get(param)));
+
+                if (filter.getDateFlight() != null && param.equals("dateFlight"))
+                   // predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(
+                      //    rootFlight.get("dateFlight"), filterParams.get(param)));
+
+                //work
+                   predicate = criteriaBuilder.and(predicate, criteriaBuilder
+                      .equal(rootFlight.<Date>get("dateFlight"), filter.getDateFlight()));
+
+                //work
+                if (filter.getDateFrom() != null && filter.getDateTo() != null && param.equals("dateFrom")) {
+                    predicate = criteriaBuilder.and(predicate,criteriaBuilder.between(rootFlight.<Date>get("dateFlight"),
+                            filter.getDateFrom(), filter.getDateTo()));
+                }
+            }
+        }
+        CriteriaQuery<Flight> criteriaQuery = flightCriteria.select(rootFlight).where(predicate);
+        return getEntityManager().createQuery(criteriaQuery).getResultList();
     }
 }
