@@ -52,7 +52,7 @@ public class Flight {
     }*/
 
     @Temporal(value = TemporalType.DATE)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
     @Column(name = "DATE_FLIGHT")
     public Date getDateFlight() {
         return dateFlight;

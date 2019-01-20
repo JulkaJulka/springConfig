@@ -1,8 +1,10 @@
 package com.lesson6.avia_dz;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lesson6.avia_dz.DAO.FlightDaoImpl;
 import com.lesson6.avia_dz.DAO.PlaneDaoImpl;
+import com.lesson6.avia_dz.model.Filter;
 import com.lesson6.avia_dz.model.Flight;
 import com.lesson6.avia_dz.model.Passenger;
 import com.lesson6.avia_dz.model.Plane;
@@ -21,8 +23,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 @Controller
 @EnableWebMvc
@@ -227,13 +232,37 @@ public class AviaController {
 
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/Flight/mostPopularFrom")
+    @RequestMapping(method = RequestMethod.POST, value = "/Flight/mostPopularFrom", produces = "application/json")
     public @ResponseBody
     List<Flight> mostPopularFrom(HttpServletRequest req) {
         String city = req.getParameter("city");
 
         return flightService.mostPopularFrom(city);
 
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/Flight/flightsByDate")
+    public @ResponseBody
+    List<Flight> flightsByDate(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        Filter filter = convertJSONStringToFilter(req);
+
+       return flightService.flightsByDate(filter);
+    }
+    private Filter convertJSONStringToFilter(HttpServletRequest req) {
+        ObjectMapper mapper = new ObjectMapper();
+     //   mapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, true);
+
+        //DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+      //  mapper.setDateFormat(df);
+
+        try (InputStream is = req.getInputStream()) {
+            Filter filter = mapper.readValue(is, Filter.class);
+
+            return filter;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private Passenger convertJSONStringToPassenger(HttpServletRequest req) {
@@ -260,6 +289,7 @@ public class AviaController {
         return null;
     }
 
+
     private Plane convertJSONStringToPlane(HttpServletRequest req) {
         ObjectMapper mapper = new ObjectMapper();
         try (InputStream is = req.getInputStream()) {
@@ -271,4 +301,5 @@ public class AviaController {
         }
         return null;
     }
+
 }

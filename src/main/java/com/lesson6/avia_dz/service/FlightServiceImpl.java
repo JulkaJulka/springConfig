@@ -2,6 +2,7 @@ package com.lesson6.avia_dz.service;
 
 import com.lesson6.avia_dz.BadRequestException;
 import com.lesson6.avia_dz.DAO.FlightDAO;
+import com.lesson6.avia_dz.model.Filter;
 import com.lesson6.avia_dz.model.Flight;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,5 +29,18 @@ public class FlightServiceImpl extends GenericsServiceImpl<Flight, FlightDAO> im
     @Override
     public List<Flight> mostPopularFrom(String cityFrom) {
         return flightDAO.mostPopularFrom(cityFrom);
+    }
+
+    @Override
+    public List<Flight> flightsByDate(Filter filter)  {
+       // if(!validEnterDates(filter))
+         //   throw new BadRequestException("Please,enter dateFlight or range of dates");
+        return flightDAO.flightsByDate(filter);
+    }
+
+    public boolean validEnterDates(Filter filter){
+        if(filter.getDateFlight() != null && (filter.getDateFrom() != null || filter.getDateTo() != null))
+            return false;
+        return true;
     }
 }

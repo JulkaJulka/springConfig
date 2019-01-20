@@ -78,16 +78,14 @@ public class FlightDaoImpl extends GenericDaoImpl<Flight> implements FlightDAO {
                             rootFlight.get(param), filterParams.get(param)));
 
                 if (filter.getDateFlight() != null && param.equals("dateFlight"))
-                   // predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(
-                      //    rootFlight.get("dateFlight"), filterParams.get(param)));
+                    predicate = criteriaBuilder.and(predicate, criteriaBuilder
+                            .equal(rootFlight.<Date>get("dateFlight"), filter.getDateFlight()));
 
-                //work
-                   predicate = criteriaBuilder.and(predicate, criteriaBuilder
-                      .equal(rootFlight.<Date>get("dateFlight"), filter.getDateFlight()));
+                // predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(
+                //    rootFlight.get("dateFlight"), filterParams.get(param)));
 
-                //work
                 if (filter.getDateFrom() != null && filter.getDateTo() != null && param.equals("dateFrom")) {
-                    predicate = criteriaBuilder.and(predicate,criteriaBuilder.between(rootFlight.<Date>get("dateFlight"),
+                    predicate = criteriaBuilder.and(predicate, criteriaBuilder.between(rootFlight.<Date>get("dateFlight"),
                             filter.getDateFrom(), filter.getDateTo()));
                 }
             }
